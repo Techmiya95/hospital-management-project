@@ -315,8 +315,11 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
-          <div className="border-t border-border mt-8 pt-8 text-center text-sm text-muted-foreground">
-            © 2025 MediFlow AI. All rights reserved. Built for Indian Healthcare.
+          <div className="border-t border-border mt-8 pt-8 flex flex-col items-center gap-2 text-sm text-muted-foreground">
+            <p>© 2025 MediFlow AI. All rights reserved. Built for Indian Healthcare.</p>
+            <a href="https://hospital.techmiyaedtech.com" className="hover:text-primary transition-colors hover:underline">
+              hospital.techmiyaedtech.com
+            </a>
           </div>
         </div>
       </footer>
