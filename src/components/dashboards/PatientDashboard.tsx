@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import PatientProfileModal from "@/components/dashboards/PatientProfileModal";
 import { Calendar, FileText, Pill, CreditCard, Clock, User } from "lucide-react";
 
 const appointments = [
@@ -21,17 +23,30 @@ const prescriptions = [
 
 export default function PatientDashboard() {
   const { user } = useAuth();
+  const [profileOpen, setProfileOpen] = useState(false);
+  const initials = user?.name?.split(" ").map((n) => n[0]).join("") ?? "?";
 
   return (
     <div className="space-y-6">
       {/* Welcome */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Welcome, {user?.name}</h1>
-          <p className="text-muted-foreground">Patient ID: <span className="font-mono text-primary">{user?.id}</span></p>
+        <div className="flex items-center gap-4">
+          <button
+            id="patient-profile-avatar"
+            onClick={() => setProfileOpen(true)}
+            className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-white font-bold text-lg shadow-md hover:shadow-lg hover:scale-105 transition-all cursor-pointer shrink-0"
+            title="View Profile"
+          >
+            {initials}
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Welcome, {user?.name}</h1>
+            <p className="text-muted-foreground">Patient ID: <span className="font-mono text-primary">{user?.id}</span></p>
+          </div>
         </div>
         <Button variant="hero">Book Appointment</Button>
       </div>
+      <PatientProfileModal open={profileOpen} onOpenChange={setProfileOpen} />
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

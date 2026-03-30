@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import PatientProfileModal from "@/components/dashboards/PatientProfileModal";
 import {
   Activity, LogOut, User, Stethoscope, FlaskConical, Pill, CreditCard,
   ShieldCheck, LayoutDashboard, Calendar, FileText, Settings, Bell,
@@ -57,11 +59,21 @@ const sidebarItems = {
   ],
 };
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+interface DashboardLayoutProps {
+  children: React.ReactNode;
+  activeSidebarIndex?: number;
+  onSidebarClick?: (index: number, label: string) => void;
+}
+
+export default function DashboardLayout({ children, activeSidebarIndex, onSidebarClick }: DashboardLayoutProps) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [profileOpen, setProfileOpen] = useState(false);
 
   if (!user) return null;
+
+  const activeIdx = activeSidebarIndex ?? 0;
+  const initials = user.name.split(" ").map((n) => n[0]).join("");
 
   const config = roleConfig[user.role];
   const items = sidebarItems[user.role];
@@ -82,8 +94,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {items.map((item, i) => (
             <button
               key={item.label}
+              onClick={() => onSidebarClick?.(i, item.label)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-                i === 0 ? "bg-primary/10 text-primary font-medium" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                i === activeIdx ? "bg-primary/10 text-primary font-medium" : "text-muted-foreground hover:bg-muted hover:text-foreground"
               }`}
             >
               <item.icon className="h-4 w-4" />
@@ -117,8 +130,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Bell className="h-5 w-5" />
               <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-destructive" />
             </button>
+            <button
+              id="profile-avatar-btn"
+              onClick={() => setProfileOpen(true)}
+              className="h-9 w-9 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-white text-sm font-bold shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+              title="View Profile"
+            >
+              {initials}
+            </button>
           </div>
         </header>
+        <PatientProfileModal open={profileOpen} onOpenChange={setProfileOpen} />
         <div className="p-6">{children}</div>
       </main>
     </div>
